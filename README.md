@@ -148,7 +148,7 @@ src/
 
 1. **Clone or extract the project**
    ```bash
-   cd "c:\Users\HGL\Desktop\Web Application Programming\Final"
+   https://github.com/HuddyLatimer/web-app-assignment.git"
    ```
 
 2. **Build the project**
