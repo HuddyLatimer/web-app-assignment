@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+    <title>Products - Sports Equipment Store</title>
+</head>
+<body>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+
+<div class="container">
+    <h2 class="mb-4">Our Products</h2>
+
+    <!-- Search and Filter Section -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <form th:action="@{/products}" method="get" class="input-group">
+                <input type="text" class="form-control" name="search" placeholder="Search products..." th:value="${search}">
+                <button class="btn btn-primary" type="submit">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <form th:action="@{/products}" method="get">
+                <select name="categoryId" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Categories</option>
+                    <option th:each="category : ${categories}"
+                            th:value="${category.id}"
+                            th:text="${category.name}"
+                            th:selected="${category.id == selectedCategoryId}">Category</option>
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div th:if="${products.isEmpty()}" class="alert alert-info">
+        No products found matching your criteria.
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+        <div class="col" th:each="product : ${products}">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${product.name}">Product Name</h5>
+                    <p class="card-text text-muted" th:text="${product.category.name}">Category</p>
+                    <p class="card-text" th:text="${#strings.abbreviate(product.description, 80)}">Description</p>
+                    <p class="card-text fw-bold fs-5" th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 2)}">$0.00</p>
+                    <p class="card-text">
+                        <small th:if="${product.stockQuantity > 10}" class="text-success">
+                            <i class="bi bi-check-circle-fill"></i> In Stock
+                        </small>
+                        <small th:if="${product.stockQuantity > 0 && product.stockQuantity <= 10}" class="text-warning">
+                            <i class="bi bi-exclamation-triangle-fill"></i> Only <span th:text="${product.stockQuantity}">0</span> left
+                        </small>
+                        <small th:if="${product.stockQuantity == 0}" class="text-danger">
+                            <i class="bi bi-x-circle-fill"></i> Out of Stock
+                        </small>
+                    </p>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a th:href="@{/products/{id}(id=${product.id})}" class="btn btn-outline-primary btn-sm w-100 mb-2">
+                        <i class="bi bi-eye"></i> View Details
+                    </a>
+                    <form th:action="@{/cart/add}" method="post" th:if="${product.stockQuantity > 0}">
+                        <input type="hidden" name="productId" th:value="${product.id}">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn btn-primary btn-sm w-100">
+                            <i class="bi bi-cart-plus"></i> Add to Cart
+                        </button>
+                    </form>
+                    <button th:if="${product.stockQuantity == 0}" class="btn btn-secondary btn-sm w-100" disabled>
+                        Out of Stock
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>
